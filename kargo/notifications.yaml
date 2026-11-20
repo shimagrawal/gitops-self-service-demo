@@ -24,6 +24,7 @@ spec:
   channels:
   - name: slack
     kind: MessageChannel
+    output: "❌ Promotion to ${{ event.stageName }} failed in project ${{ event.project }}: ${{ event.message }}"
 ---
 apiVersion: ee.kargo.akuity.io/v1alpha1
 kind: EventRouter
@@ -36,3 +37,4 @@ spec:
   channels:
   - name: slack
     kind: MessageChannel
+    output: "⚠️ Verification failed in project ${{ event.project }} for Freight ${{ event.freightName }}"
