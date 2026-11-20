@@ -1,0 +1,65 @@
+# Renders the team's cdk8s code for the Stage's environment with the promoted image, pushes it to the
+# stage/<stage> branch and syncs every Argo CD Application of the team in that environment.
+# New services need no change here: they are rendered into a new folder, and the ApplicationSet
+# creates their Application.
+apiVersion: kargo.akuity.io/v1alpha1
+kind: PromotionTask
+metadata:
+  name: deploy
+  namespace: d2c
+spec:
+  vars:
+  - name: gitRepo
+    value: https://github.com/shimagrawal/gitops-self-service-demo.git
+  - name: imageRepo
+    value: ghcr.io/akuity/guestbook
+  steps:
+  - uses: git-clone
+    config:
+      repoURL: ${{ vars.gitRepo }}
+      checkout:
+      - commit: ${{ commitFrom(vars.gitRepo).ID }}
+        path: ./src
+      - branch: stage/${{ ctx.stage }}
+        create: true
+        path: ./out
+  # Custom step (kargo-custom-steps): npm ci + cdk8s synth, with per-Stage settings as env.
+  - uses: cdk8s-synth
+    as: render
+    config:
+      path: ./src
+      outPath: ./rendered
+      env:
+        ENVIRONMENT: ${{ ctx.stage }}
+        IMAGE_REFS: ${{ vars.imageRepo + "@" + imageFrom(vars.imageRepo).Digest }}
+  - uses: git-clear
+    config:
+      path: ./out
+  - uses: copy
+    config:
+      inPath: ./rendered
+      outPath: ./out
+  - uses: git-commit
+    as: commit
+    config:
+      path: ./out
+      message: |
+        Render d2c for ${{ ctx.stage }}
+
+        Source commit: ${{ commitFrom(vars.gitRepo).ID }}
+        Image: ${{ vars.imageRepo }}@${{ imageFrom(vars.imageRepo).Digest }}
+        Freight: ${{ ctx.targetFreight.name }}
+  - uses: git-push
+    config:
+      path: ./out
+  # Every Application of the team in this environment, however many services it has.
+  - uses: argocd-update
+    config:
+      apps:
+      - selector:
+          matchLabels:
+            demo.akuity.io/team: d2c
+            demo.akuity.io/env: ${{ ctx.stage }}
+        sources:
+        - repoURL: ${{ vars.gitRepo }}
+          desiredRevision: ${{ task.outputs['commit'].commit }}

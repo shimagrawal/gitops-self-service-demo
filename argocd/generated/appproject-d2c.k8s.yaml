@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: d2c
+  namespace: argocd
+spec:
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace
+  description: Generated from platform/teams.ts for team d2c
+  destinations:
+    - name: kargo-quickstart
+      namespace: d2c-*
+    - name: cluster-uat
+      namespace: d2c-*
+    - name: cluster-prod
+      namespace: d2c-*
+  roles:
+    - groups:
+        - kargo-developers
+      name: developer
+      policies:
+        - p, proj:d2c:developer, applications, get, d2c/*, allow
+        - p, proj:d2c:developer, applications, sync, d2c/*, allow
+        - p, proj:d2c:developer, applications, action/*, d2c/*, allow
+        - p, proj:d2c:developer, logs, get, d2c/*, allow
+  sourceRepos:
+    - https://github.com/shimagrawal/gitops-self-service-demo.git

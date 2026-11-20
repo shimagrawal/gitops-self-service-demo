@@ -1,0 +1,27 @@
+# Syncs kargo/ (Project, Warehouse, PromotionTask, Stages, verification, notifications) into the
+# Kargo instance, registered in Argo CD as the kargo-resources cluster. kargo/cluster/ is not
+# included: cluster-scoped resources are registered once with kargo apply.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: d2c-kargo-resources
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/shimagrawal/gitops-self-service-demo.git
+    targetRevision: main
+    path: kargo
+    directory:
+      include: '*.yaml'
+  destination:
+    name: kargo-resources
+  syncPolicy:
+    automated:
+      prune: true
+    retry:
+      limit: 5
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 2m

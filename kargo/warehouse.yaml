@@ -1,0 +1,31 @@
+# A release is the image digest plus the commit of the team's cdk8s code. Changes to kargo/,
+# argocd/ or scenes/ are platform changes and do not create Freight.
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Warehouse
+metadata:
+  name: d2c
+  namespace: d2c
+  labels:
+    kargo.akuity.io/shard: self-hosted-prod
+spec:
+  shard: self-hosted-prod
+  interval: 1m0s
+  subscriptions:
+  - image:
+      repoURL: ghcr.io/akuity/guestbook
+      imageSelectionStrategy: SemVer
+      constraint: ">=0.0.1"
+      discoveryLimit: 5
+  - git:
+      repoURL: https://github.com/shimagrawal/gitops-self-service-demo.git
+      branch: main
+      includePaths:
+      - teams
+      - lib
+      - platform
+      - imports
+      - main.ts
+      - cdk8s.yaml
+      - package.json
+      - package-lock.json
+      - tsconfig.json

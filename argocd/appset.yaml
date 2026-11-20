@@ -1,0 +1,64 @@
+# Owned by the platform (Infra) team. Creates one Argo CD Application per service per environment,
+# from the folders Kargo renders into the stage/<environment> branches. A new service gets its
+# Applications without anyone creating them.
+# Apply to the Akuity Argo CD instance the Kargo agents are connected to.
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: d2c
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions:
+  - missingkey=error
+  generators:
+  - matrix:
+      generators:
+      # Environments, from platform/environments.ts.
+      - list:
+          elements:
+          - env: dev
+            cluster: kargo-quickstart
+          - env: staging
+            cluster: cluster-uat
+          - env: prod
+            cluster: cluster-prod
+      # Every service folder rendered for that environment.
+      - git:
+          repoURL: https://github.com/shimagrawal/gitops-self-service-demo.git
+          revision: stage/{{ .env }}
+          directories:
+          - path: '*'
+          requeueAfterSeconds: 30
+  template:
+    metadata:
+      name: '{{ .path.basename }}-{{ .env }}'
+      labels:
+        demo.akuity.io/team: d2c
+        demo.akuity.io/env: '{{ .env }}'
+      annotations:
+        kargo.akuity.io/authorized-stage: d2c:{{ .env }}
+    spec:
+      project: d2c
+      source:
+        repoURL: https://github.com/shimagrawal/gitops-self-service-demo.git
+        targetRevision: stage/{{ .env }}
+        path: '{{ .path.path }}'
+      destination:
+        name: '{{ .cluster }}'
+        namespace: '{{ .path.basename }}'
+      # One sync policy for every service.
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+          allowEmpty: false
+        syncOptions:
+        - PruneLast=true
+        - FailOnSharedResource=true
+        retry:
+          limit: 5
+          backoff:
+            duration: 10s
+            factor: 2
+            maxDuration: 3m

@@ -1,0 +1,26 @@
+# One Kargo Project per product team. Owned by the platform (Infra) team.
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Project
+metadata:
+  name: d2c
+  annotations:
+    # Kargo creates the project namespace, which the other resources need, so sync the Project first.
+    argocd.argoproj.io/sync-wave: "-1"
+---
+apiVersion: kargo.akuity.io/v1alpha1
+kind: ProjectConfig
+metadata:
+  name: d2c
+  namespace: d2c
+spec:
+  promotionPolicies:
+  # Every change lands in dev on its own.
+  - stageSelector:
+      name: dev
+    autoPromotionEnabled: true
+  # When staging's smoke test fails, Kargo promotes the last verified Freight again.
+  - stageSelector:
+      name: staging
+    autoRollback:
+      onVerification:
+      - Failed

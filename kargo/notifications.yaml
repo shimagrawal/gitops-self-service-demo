@@ -1,0 +1,38 @@
+# Failed promotions and failed verifications go to the team's Slack channel.
+# Set channelID to your channel and create the token Secret with the Kargo CLI (see README);
+# the token is never stored in Git.
+apiVersion: ee.kargo.akuity.io/v1alpha1
+kind: MessageChannel
+metadata:
+  name: slack
+  namespace: d2c
+spec:
+  secretRef:
+    name: slack-token
+  slack:
+    channelID: C0C4F706JAE
+---
+apiVersion: ee.kargo.akuity.io/v1alpha1
+kind: EventRouter
+metadata:
+  name: promotion-failures
+  namespace: d2c
+spec:
+  types:
+  - PromotionFailed
+  - PromotionErrored
+  channels:
+  - name: slack
+    kind: MessageChannel
+---
+apiVersion: ee.kargo.akuity.io/v1alpha1
+kind: EventRouter
+metadata:
+  name: verification-failures
+  namespace: d2c
+spec:
+  types:
+  - FreightVerificationFailed
+  channels:
+  - name: slack
+    kind: MessageChannel

@@ -1,0 +1,31 @@
+# Staging verification: checks that d2c-web answers over its Service. The Job runs on the Stage's
+# shard cluster, so it needs a self-hosted Kargo agent (Akuity-managed agents cannot run Jobs).
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: smoke-test
+  namespace: d2c
+spec:
+  metrics:
+  - name: http-check
+    provider:
+      job:
+        spec:
+          backoffLimit: 0
+          template:
+            spec:
+              restartPolicy: Never
+              containers:
+              - name: http-check
+                image: curlimages/curl:8.11.1
+                command:
+                - sh
+                - -c
+                - |
+                  url=http://d2c-web.d2c-web.svc.cluster.local/
+                  echo "Checking $url"
+                  if ! curl -sSf -o /dev/null --max-time 5 --retry 3 --retry-delay 3 --retry-all-errors "$url"; then
+                    echo "d2c-web is not serving"
+                    exit 1
+                  fi
+                  echo "d2c-web is serving"

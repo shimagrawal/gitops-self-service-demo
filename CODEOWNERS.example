@@ -1,0 +1,11 @@
+# How ownership would be enforced in a real setup (rename to .github/CODEOWNERS with real teams).
+# The platform team owns the rails, each product team owns its services.
+
+platform/                @org/platform-team
+lib/                     @org/platform-team
+argocd/                  @org/platform-team
+kargo/                   @org/platform-team
+generate-appprojects.ts  @org/platform-team
+main.ts                  @org/platform-team
+
+teams/d2c/               @org/d2c-devops
