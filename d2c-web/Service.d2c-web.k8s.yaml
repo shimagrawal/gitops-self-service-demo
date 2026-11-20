@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/name: d2c-web
+    environment: staging
+    team: d2c
+  name: d2c-web
+  namespace: d2c-web
+spec:
+  ports:
+    - port: 80
+      targetPort: 3000
+  selector:
+    app.kubernetes.io/name: d2c-web
