@@ -53,7 +53,12 @@ spec:
     config:
       path: ./out
   # Every Application of the team in this environment, however many services it has.
+  # On an environment's first promotion the ApplicationSet creates the Applications shortly after
+  # the push, so retry until they exist instead of failing.
   - uses: argocd-update
+    retry:
+      errorThreshold: 20
+      timeout: 10m
     config:
       apps:
       - selector:
