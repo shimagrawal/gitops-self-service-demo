@@ -1,7 +1,8 @@
 // Owned by the platform (Infra) team. The one construct product teams use to describe a service.
 // It turns a few lines of team config into everything the service needs in an environment, with
 // the platform's defaults and rules built in:
-//   - its own namespace, created first (sync wave -1), so nothing runs before its namespace exists
+//   - its own namespace, created first (sync wave -1), so nothing runs before its namespace exists,
+//     with the team label and Pod Security enforced
 //   - the team label on every object, so ownership and alerts follow the team
 //   - per-environment settings from platform/environments.ts
 //   - the image pinned to the digest Kargo promoted
@@ -36,7 +37,10 @@ export class WorkloadApp extends Chart {
     const labels = { 'app.kubernetes.io/name': name, team: props.team, environment };
 
     const ns = new KubeNamespace(this, 'namespace', {
-      metadata: { name, labels: { team: props.team } },
+      metadata: {
+        name,
+        labels: { 'team': props.team, 'pod-security.kubernetes.io/enforce': 'baseline' },
+      },
     });
     ns.metadata.addAnnotation('argocd.argoproj.io/sync-wave', '-1');
 

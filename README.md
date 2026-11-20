@@ -41,8 +41,11 @@ Failed promotions and verifications ─► Slack (EventRouter)
 - **A new service needs no platform change.** Adding a `WorkloadApp` renders a new folder, and the
   ApplicationSet creates its Applications. The AppProject already allows its `d2c-*` namespace, and
   the pipeline already renders every service.
-- **No ordering problems.** The namespace comes from the same construct as the workload and syncs
-  first (wave -1).
+- **Teams create their own namespaces, within limits.** Each service gets its own namespace from the
+  construct (team label, Pod Security `baseline`, synced first with wave -1, so nothing runs before
+  its namespace exists). The AppProject lets the team create only namespaces with its prefix
+  (`d2c-*`) and no other cluster-scoped objects, and keeps the platform's `ResourceQuota`,
+  `LimitRange` and `NetworkPolicy` objects out of the team's hands.
 - **One sync policy** for every service: automated, prune, self-heal, `PruneLast`,
   `FailOnSharedResource`, retries.
 - **Per-environment settings** come from `platform/environments.ts`, or from the service for
@@ -137,7 +140,7 @@ Play each scene with `scenes/play.sh <scene>`, then commit and push it live. Res
 |---|---|---|---|
 | 1 | Onboard a new service | `onboard` | `d2c-payments` is added in a few lines. Dev renders it, the ApplicationSet creates `d2c-payments-dev` and its namespace comes up first. No platform change. |
 | 2 | Ship it to prod | (Kargo UI) | Promote to staging (smoke test passes), then prod: a developer promotes, the approver approves, prod runs 3 replicas. Audit events record both. |
-| 3 | Guardrail | `guardrail` | The team adds a ClusterRoleBinding to cluster-admin. Argo CD refuses it: not permitted in project `d2c`. |
+| 3 | Guardrail | `guardrail` | The team adds a ClusterRoleBinding to cluster-admin and a namespace outside its prefix (`shared-tools`). Argo CD refuses both: not permitted in project `d2c`. |
 | 4 | Broken code | `broken` | A typo in the team's code. The promotion to dev fails with the file and line, and Slack is notified. Dev keeps running the previous release. |
 | 5 | Bad release | `bad-release` | `d2c-web` listens on the wrong port. It deploys and its pods run, but the staging smoke test fails, the Freight cannot reach prod, and staging rolls back on its own. |
 | 6 | Rollback and hotfix | (Kargo UI) | Re-promote the previous Freight to prod. For a hotfix, approve a Freight for prod directly, skipping staging. |
@@ -148,3 +151,39 @@ Notes:
   shortly after its first render. Promotions update the Applications that exist at the time.
 - In the guardrail scene the promotion succeeds; the refusal shows on the new Application in Argo CD.
 - The construct has no probes, so the bad release looks healthy until the smoke test runs.
+
+## Next: guardrails in every new namespace (Kyverno)
+
+The AppProject already stops teams from creating or changing quotas, limits and network policies.
+To have them created automatically in every namespace a team creates, add a Kyverno `ClusterPolicy`
+(owned by the platform team, deployed to every cluster by a platform ApplicationSet) that generates
+them for namespaces with a `team` label, and keeps them in place with `synchronize: true`:
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: team-namespace-defaults
+spec:
+  rules:
+  - name: default-quota
+    match:
+      any:
+      - resources:
+          kinds: [Namespace]
+          selector:
+            matchExpressions: [{ key: team, operator: Exists }]
+    generate:
+      apiVersion: v1
+      kind: ResourceQuota
+      name: default-quota
+      namespace: '{{request.object.metadata.name}}'
+      synchronize: true
+      data:
+        spec:
+          hard: { requests.cpu: '2', requests.memory: 4Gi, limits.memory: 8Gi }
+  # The same pattern for a LimitRange and a default-deny NetworkPolicy.
+```
+
+A new service's namespace then gets its quota, limits and network policy the moment it is created,
+with no work from the team or the platform team. This needs Kyverno on the clusters.

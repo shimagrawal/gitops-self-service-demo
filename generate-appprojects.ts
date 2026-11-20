@@ -20,9 +20,15 @@ for (const [team, config] of Object.entries(TEAMS)) {
         name: env.cluster,
         namespace: `${config.namespacePrefix}*`,
       })),
-      // The only cluster-scoped kind a team may create is its namespaces. ClusterRoles,
-      // ClusterRoleBindings, CRDs and webhooks are refused.
-      clusterResourceWhitelist: [{ group: '', kind: 'Namespace' }],
+      // The only cluster-scoped objects a team may create are namespaces with its own prefix.
+      // Other namespaces, ClusterRoles, ClusterRoleBindings, CRDs and webhooks are refused.
+      clusterResourceWhitelist: [{ group: '', kind: 'Namespace', name: `${config.namespacePrefix}*` }],
+      // The platform's guardrails inside team namespaces. Teams cannot create, change or delete them.
+      namespaceResourceBlacklist: [
+        { group: '', kind: 'ResourceQuota' },
+        { group: '', kind: 'LimitRange' },
+        { group: 'networking.k8s.io', kind: 'NetworkPolicy' },
+      ],
       // Developers can view, sync, run actions and read logs on their team's Applications. They
       // cannot delete them, override what is deployed or edit the project.
       roles: [{
