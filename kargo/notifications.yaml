@@ -24,7 +24,12 @@ spec:
   channels:
   - name: slack
     kind: MessageChannel
-    output: "❌ Promotion to ${{ event.stageName }} failed in project ${{ event.project }}: ${{ event.message }}"
+    # data is the Promotion itself; its status.message holds the reason it failed.
+    output: |-
+      :x: *Promotion to ${{ event.stageName }} failed* (project ${{ event.project }})
+      Freight: ${{ data.spec.freight }}
+      Promotion: ${{ event.name }}
+      Reason: ${{ data.status.message }}
 ---
 apiVersion: ee.kargo.akuity.io/v1alpha1
 kind: EventRouter
@@ -37,4 +42,9 @@ spec:
   channels:
   - name: slack
     kind: MessageChannel
-    output: "⚠️ Verification failed in project ${{ event.project }} for Freight ${{ event.freightName }}"
+    # data is the Freight; the AnalysisRun has the failed check's details.
+    output: |-
+      :warning: *Verification failed in ${{ event.stageName }}* (project ${{ event.project }})
+      Freight: ${{ data.alias }} (${{ data.metadata.name }})
+      AnalysisRun: ${{ deref(event.analysisRunName) }}
+      The Freight is not verified, so it cannot be promoted further.
