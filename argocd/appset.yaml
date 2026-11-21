@@ -38,6 +38,11 @@ spec:
         demo.akuity.io/env: '{{ .env }}'
       annotations:
         kargo.akuity.io/authorized-stage: d2c:{{ .env }}
+        # Every service alerts the team's Slack channel through the Argo CD "slack" service.
+        notifications.argoproj.io/subscribe.on-created.slack: C0C4F706JAE
+        notifications.argoproj.io/subscribe.on-deployed.slack: C0C4F706JAE
+        notifications.argoproj.io/subscribe.on-sync-failed.slack: C0C4F706JAE
+        notifications.argoproj.io/subscribe.on-health-degraded.slack: C0C4F706JAE
     spec:
       project: d2c
       source:

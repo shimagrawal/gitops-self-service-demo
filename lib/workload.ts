@@ -22,6 +22,10 @@ export interface WorkloadAppProps {
   readonly replicas?: Partial<Record<EnvironmentName, number>>;
   /** Environment variables for the container. */
   readonly env?: Record<string, string>;
+  /** Memory limit for the container. Defaults to 256Mi. */
+  readonly memoryLimit?: string;
+  /** Seconds before a stuck rollout is reported as failed (Degraded). Defaults to Kubernetes' 600. */
+  readonly progressDeadlineSeconds?: number;
 }
 
 export class WorkloadApp extends Chart {
@@ -48,6 +52,7 @@ export class WorkloadApp extends Chart {
       metadata: { name, namespace: name, labels },
       spec: {
         replicas: props.replicas?.[environment] ?? ENVIRONMENTS[environment].replicas,
+        progressDeadlineSeconds: props.progressDeadlineSeconds,
         selector: { matchLabels: { 'app.kubernetes.io/name': name } },
         template: {
           metadata: { labels },
@@ -58,8 +63,11 @@ export class WorkloadApp extends Chart {
               ports: [{ containerPort: props.port }],
               env: Object.entries(props.env ?? {}).map(([key, value]) => ({ name: key, value })),
               resources: {
-                requests: { cpu: Quantity.fromString('50m'), memory: Quantity.fromString('64Mi') },
-                limits: { memory: Quantity.fromString('256Mi') },
+                requests: {
+                  cpu: Quantity.fromString('50m'),
+                  memory: Quantity.fromString(props.memoryLimit ?? '64Mi'),
+                },
+                limits: { memory: Quantity.fromString(props.memoryLimit ?? '256Mi') },
               },
             }],
           },
