@@ -9,20 +9,4 @@ export function d2cServices(app: App) {
     image: 'ghcr.io/akuity/guestbook',
     port: 3000,
   });
-
-  new WorkloadApp(app, 'd2c-orders', {
-    team: 'd2c',
-    image: 'ghcr.io/akuity/guestbook',
-    port: 3000,
-    replicas: { prod: 2 },
-    env: { ORDERS_MODE: 'demo' },
-  });
-
-  new WorkloadApp(app, 'd2c-payments', {
-    team: 'd2c',
-    image: 'ghcr.io/akuity/guestbook',
-    port: 3000,
-    replicas: { prod: 2 },
-    env: { PAYMENTS_PROVIDER: 'sandbox' },
-  });
 }
