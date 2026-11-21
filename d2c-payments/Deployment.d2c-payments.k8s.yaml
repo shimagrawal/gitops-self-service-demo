@@ -8,7 +8,6 @@ metadata:
   name: d2c-payments
   namespace: d2c-payments
 spec:
-  progressDeadlineSeconds: 30
   replicas: 1
   selector:
     matchLabels:
@@ -30,7 +29,7 @@ spec:
             - containerPort: 3000
           resources:
             limits:
-              memory: 2Mi
+              memory: 256Mi
             requests:
               cpu: 50m
-              memory: 2Mi
+              memory: 64Mi
