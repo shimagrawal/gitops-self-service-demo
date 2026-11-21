@@ -24,7 +24,5 @@ export function d2cServices(app: App) {
     port: 3000,
     replicas: { prod: 2 },
     env: { PAYMENTS_PROVIDER: 'sandbox' },
-    memoryLimit: '2Mi',               // far too low: the pod can't run
-    progressDeadlineSeconds: 30,      // reported as Degraded after 30s
   });
 }
