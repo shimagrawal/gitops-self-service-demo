@@ -10,7 +10,7 @@ export function d2cServices(app: App) {
     port: 3000,
   });
 
-   new WorkloadApp(app, 'd2c-orders', {
+  new WorkloadApp(app, 'd2c-orders', {
     team: 'd2c',
     image: 'ghcr.io/akuity/guestbook',
     port: 3000,
@@ -24,6 +24,8 @@ export function d2cServices(app: App) {
     port: 3000,
     replicas: { prod: 2 },
     env: { PAYMENTS_PROVIDER: 'sandbox' },
+    // "Save some memory": far too low for the app, so it is OOMKilled and the rollout fails fast.
+    memoryLimit: '8Mi',
+    progressDeadlineSeconds: 30,
   });
-
 }
