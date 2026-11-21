@@ -7,6 +7,7 @@
 #   scenes/play.sh guardrail    + a ClusterRoleBinding to cluster-admin, refused by the AppProject
 #   scenes/play.sh broken       a typo in the team's code, the promotion fails with file and line
 #   scenes/play.sh bad-release  d2c-web on the wrong port: deploys, pods run, the smoke test fails
+#   scenes/play.sh success      + d2c-orders, a healthy new service (Slack: created, deployed)
 #   scenes/play.sh incident     d2c-payments with a 2Mi memory limit: OOMKilled, Degraded, AI incident
 #   scenes/play.sh recover      d2c-web, d2c-orders and d2c-payments, healthy (after incident)
 set -euo pipefail
