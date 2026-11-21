@@ -24,5 +24,8 @@ export function d2cServices(app: App) {
     port: 3000,
     replicas: { prod: 2 },
     env: { PAYMENTS_PROVIDER: 'sandbox' },
+    // "Save some memory": far too low for the app, so it is OOMKilled and the rollout fails fast.
+    memoryLimit: '2Mi',
+    progressDeadlineSeconds: 30,
   });
 }
