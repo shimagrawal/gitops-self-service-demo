@@ -10,11 +10,12 @@ export function d2cServices(app: App) {
     port: 3000,
   });
 
-  new WorkloadApp(app, 'd2c-payments', {
+   new WorkloadApp(app, 'd2c-orders', {
     team: 'd2c',
     image: 'ghcr.io/akuity/guestbook',
     port: 3000,
-    replica: { prod: 3 },
-    env: { PAYMENTS_PROVIDER: 'sandbox' },
+    replicas: { prod: 2 },
+    env: { ORDERS_MODE: 'demo' },
   });
+
 }
