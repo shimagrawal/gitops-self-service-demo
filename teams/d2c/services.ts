@@ -17,4 +17,14 @@ export function d2cServices(app: App) {
     replicas: { prod: 2 },
     env: { ORDERS_MODE: 'demo' },
   });
+
+  new WorkloadApp(app, 'd2c-payments', {
+    team: 'd2c',
+    image: 'ghcr.io/akuity/guestbook',
+    port: 3000,
+    replicas: { prod: 2 },
+    env: { PAYMENTS_PROVIDER: 'sandbox' },
+    memoryLimit: '2Mi',               // far too low: the pod can't run
+    progressDeadlineSeconds: 30,      // reported as Degraded after 30s
+  });
 }
