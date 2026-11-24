@@ -51,4 +51,19 @@ export function d2cServices(app: App) {
   //   memoryLimit: '2Mi',
   //   progressDeadlineSeconds: 30,
   // });
+
+  // 4. BAD RELEASE, AUTO-ROLLBACK: d2c-web on the wrong port (the app listens on 3000). Comment out
+  //    the d2c-web block at the top and uncomment this one. Dev auto-promotes and looks healthy;
+  //    promote it to staging. Argo CD still says Healthy (pods run), but the staging smoke test
+  //    (kargo/smoke-test.yaml) cannot reach the service, so verification fails.
+  //    Slack (Kargo): "Verification failed in staging". The Freight cannot be promoted to prod, and
+  //    staging rolls back to the last verified Freight on its own (autoRollback in
+  //    kargo/project.yaml).
+  //    Before the demo: staging must already run a verified release, so there is one to return to.
+  //    Fix: swap back to the d2c-web block at the top.
+  new WorkloadApp(app, 'd2c-web', {
+    team: 'd2c',
+    image: 'ghcr.io/akuity/guestbook',
+    port: 8080,
+  });
 }
