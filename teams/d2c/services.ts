@@ -4,11 +4,11 @@ import { App } from 'cdk8s';
 import { WorkloadApp } from '../../lib/workload';
 
 export function d2cServices(app: App) {
-  new WorkloadApp(app, 'd2c-web', {
-    team: 'd2c',
-    image: 'ghcr.io/akuity/guestbook',
-    port: 3000,
-  });
+  // new WorkloadApp(app, 'd2c-web', {
+  //   team: 'd2c',
+  //   image: 'ghcr.io/akuity/guestbook',
+  //   port: 3000,
+  // });
 
   // ---------------------------------------------------------------------------------------------
   // Demo scenes: uncomment one block at a time, commit and push.
