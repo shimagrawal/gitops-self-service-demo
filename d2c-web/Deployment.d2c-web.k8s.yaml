@@ -24,7 +24,7 @@ spec:
           image: ghcr.io/akuity/guestbook@sha256:faae7216af7e9b22e5a1f7961d9c3d89a4206727363b06f6eeb9622b00f7dc19
           name: d2c-web
           ports:
-            - containerPort: 8080
+            - containerPort: 3000
           resources:
             limits:
               memory: 256Mi
