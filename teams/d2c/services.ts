@@ -43,12 +43,12 @@ export function d2cServices(app: App) {
   //    Slack (AI On-Call, about a minute later): incident triage with root cause and suggested fix.
   //    Fix: remove memoryLimit and progressDeadlineSeconds (or set memoryLimit: '256Mi').
   //    Before the demo: resolve any open incident for d2c-payments-dev.
-  // new WorkloadApp(app, 'd2c-payments', {
-  //   team: 'd2c',
-  //   image: 'ghcr.io/akuity/guestbook',
-  //   port: 3000,
-  //   env: { PAYMENTS_PROVIDER: 'sandbox' },
-  //   memoryLimit: '2Mi',
-  //   progressDeadlineSeconds: 30,
-  // });
+  new WorkloadApp(app, 'd2c-payments', {
+    team: 'd2c',
+    image: 'ghcr.io/akuity/guestbook',
+    port: 3000,
+    env: { PAYMENTS_PROVIDER: 'sandbox' },
+    memoryLimit: '2Mi',
+    progressDeadlineSeconds: 30,
+  });
 }
