@@ -4,11 +4,11 @@ import { App } from 'cdk8s';
 import { WorkloadApp } from '../../lib/workload';
 
 export function d2cServices(app: App) {
-  // new WorkloadApp(app, 'd2c-web', {
-  //   team: 'd2c',
-  //   image: 'ghcr.io/akuity/guestbook',
-  //   port: 3000,
-  // });
+  new WorkloadApp(app, 'd2c-web', {
+    team: 'd2c',
+    image: 'ghcr.io/akuity/guestbook',
+    port: 3000,
+  });
 
   // ---------------------------------------------------------------------------------------------
   // Demo scenes: uncomment one block at a time, commit and push.
@@ -61,9 +61,9 @@ export function d2cServices(app: App) {
   //    kargo/project.yaml).
   //    Before the demo: staging must already run a verified release, so there is one to return to.
   //    Fix: swap back to the d2c-web block at the top.
-  new WorkloadApp(app, 'd2c-web', {
-    team: 'd2c',
-    image: 'ghcr.io/akuity/guestbook',
-    port: 8080,
-  });
+  // new WorkloadApp(app, 'd2c-web', {
+  //   team: 'd2c',
+  //   image: 'ghcr.io/akuity/guestbook',
+  //   port: 8080,
+  // });
 }
