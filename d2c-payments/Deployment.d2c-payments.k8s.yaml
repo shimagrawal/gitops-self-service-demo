@@ -2,34 +2,35 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app.kubernetes.io/name: d2c-orders
+    app.kubernetes.io/name: d2c-payments
     environment: dev
     team: d2c
-  name: d2c-orders
-  namespace: d2c-orders
+  name: d2c-payments
+  namespace: d2c-payments
 spec:
+  progressDeadlineSeconds: 30
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: d2c-orders
+      app.kubernetes.io/name: d2c-payments
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: d2c-orders
+        app.kubernetes.io/name: d2c-payments
         environment: dev
         team: d2c
     spec:
       containers:
         - env:
-            - name: ORDERS_MODE
-              value: demo
+            - name: PAYMENTS_PROVIDER
+              value: sandbox
           image: ghcr.io/akuity/guestbook@sha256:faae7216af7e9b22e5a1f7961d9c3d89a4206727363b06f6eeb9622b00f7dc19
-          name: d2c-orders
+          name: d2c-payments
           ports:
             - containerPort: 3000
           resources:
             limits:
-              memory: 256Mi
+              memory: 2Mi
             requests:
               cpu: 50m
-              memory: 64Mi
+              memory: 2Mi

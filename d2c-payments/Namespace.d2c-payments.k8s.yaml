@@ -6,4 +6,4 @@ metadata:
   labels:
     pod-security.kubernetes.io/enforce: baseline
     team: d2c
-  name: d2c-orders
+  name: d2c-payments
