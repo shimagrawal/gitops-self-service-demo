@@ -4,11 +4,11 @@ import { App } from 'cdk8s';
 import { WorkloadApp } from '../../lib/workload';
 
 export function d2cServices(app: App) {
-  new WorkloadApp(app, 'd2c-web', {
-    team: 'd2c',
-    image: 'ghcr.io/akuity/guestbook',
-    port: 3000,
-  });
+  // new WorkloadApp(app, 'd2c-web', {
+  //   team: 'd2c',
+  //   image: 'ghcr.io/akuity/guestbook',
+  //   port: 3000,
+  // });
 
   // ---------------------------------------------------------------------------------------------
   // Demo scenes: uncomment one block at a time, commit and push.
@@ -43,14 +43,14 @@ export function d2cServices(app: App) {
   //    Slack (AI On-Call, about a minute later): incident triage with root cause and suggested fix.
   //    Fix: remove memoryLimit and progressDeadlineSeconds (or set memoryLimit: '256Mi').
   //    Before the demo: resolve any open incident for d2c-payments-dev.
-  new WorkloadApp(app, 'd2c-payments', {
-    team: 'd2c',
-    image: 'ghcr.io/akuity/guestbook',
-    port: 3000,
-    env: { PAYMENTS_PROVIDER: 'sandbox' },
-    memoryLimit: '2Mi',
-    progressDeadlineSeconds: 30,
-  });
+  // new WorkloadApp(app, 'd2c-payments', {
+  //   team: 'd2c',
+  //   image: 'ghcr.io/akuity/guestbook',
+  //   port: 3000,
+  //   env: { PAYMENTS_PROVIDER: 'sandbox' },
+  //   memoryLimit: '2Mi',
+  //   progressDeadlineSeconds: 30,
+  // });
 
   // 4. BAD RELEASE, AUTO-ROLLBACK: d2c-web on the wrong port (the app listens on 3000). Comment out
   //    the d2c-web block at the top and uncomment this one. Dev auto-promotes and looks healthy;
@@ -61,9 +61,9 @@ export function d2cServices(app: App) {
   //    kargo/project.yaml).
   //    Before the demo: staging must already run a verified release, so there is one to return to.
   //    Fix: swap back to the d2c-web block at the top.
-  // new WorkloadApp(app, 'd2c-web', {
-  //   team: 'd2c',
-  //   image: 'ghcr.io/akuity/guestbook',
-  //   port: 8080,
-  // });
+  new WorkloadApp(app, 'd2c-web', {
+    team: 'd2c',
+    image: 'ghcr.io/akuity/guestbook',
+    port: 8080,
+  });
 }
