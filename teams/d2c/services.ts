@@ -30,12 +30,12 @@ export function d2cServices(app: App) {
   //    Slack (Kargo): "Promotion to dev failed ... 'replica' does not exist in type
   //    'WorkloadAppProps'. Did you mean to write 'replicas'?"
   //    Fix: change replica to replicas, or comment it out again.
-  new WorkloadApp(app, 'd2c-checkout', {
-    team: 'd2c',
-    image: 'ghcr.io/akuity/guestbook',
-    port: 3000,
-    replica: { prod: 2 },
-  });
+  // new WorkloadApp(app, 'd2c-checkout', {
+  //   team: 'd2c',
+  //   image: 'ghcr.io/akuity/guestbook',
+  //   port: 3000,
+  //   replica: { prod: 2 },
+  // });
 
   // 3. ARGO CD NOTIFICATION + AI ON-CALL: a memory limit far too low. It deploys, the pod cannot
   //    run, and after 30s the app is Degraded.
@@ -43,14 +43,14 @@ export function d2cServices(app: App) {
   //    Slack (AI On-Call, about a minute later): incident triage with root cause and suggested fix.
   //    Fix: remove memoryLimit and progressDeadlineSeconds (or set memoryLimit: '256Mi').
   //    Before the demo: resolve any open incident for d2c-payments-dev.
-  // new WorkloadApp(app, 'd2c-payments', {
-  //   team: 'd2c',
-  //   image: 'ghcr.io/akuity/guestbook',
-  //   port: 3000,
-  //   env: { PAYMENTS_PROVIDER: 'sandbox' },
-  //   memoryLimit: '2Mi',
-  //   progressDeadlineSeconds: 30,
-  // });
+  new WorkloadApp(app, 'd2c-payments', {
+    team: 'd2c',
+    image: 'ghcr.io/akuity/guestbook',
+    port: 3000,
+    env: { PAYMENTS_PROVIDER: 'sandbox' },
+    memoryLimit: '2Mi',
+    progressDeadlineSeconds: 30,
+  });
 
   // 4. BAD RELEASE, AUTO-ROLLBACK: d2c-web on the wrong port (the app listens on 3000). Comment out
   //    the d2c-web block at the top and uncomment this one. Dev auto-promotes and looks healthy;
