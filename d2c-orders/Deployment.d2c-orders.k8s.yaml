@@ -23,7 +23,7 @@ spec:
         - env:
             - name: ORDERS_MODE
               value: demo
-          image: ghcr.io/akuity/guestbook@sha256:faae7216af7e9b22e5a1f7961d9c3d89a4206727363b06f6eeb9622b00f7dc19
+          image: ghcr.io/akuity/guestbook@sha256:00ca33883ac6d18b7347a2a04d51fcf1e4fd09ef7404252333152543d68fe255
           name: d2c-orders
           ports:
             - containerPort: 3000
